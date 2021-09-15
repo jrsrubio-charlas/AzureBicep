@@ -1,0 +1,124 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {    
+    "productName": {
+      "type": "string",
+      "defaultValue": "realtime"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "we"
+    },
+    "version": {
+      "type": "string",
+      "defaultValue": "001"
+    },
+    "environment": {
+      "type": "string",
+      "defaultValue": "dev"
+    },
+    "resourceId": {
+      "type": "string",
+      "defaultValue": "eventHub"
+    },
+    "eventHubNamespace": {
+      "type": "string",
+      "defaultValue": "<productName>-events-<environment>-<location>-<version>"
+    },
+    "eventHubNames": {
+      "type": "array",
+      "defaultValue": [
+        "ehName1",
+        "ehName2",
+        "ehName3",
+        "ehName4",
+        "ehName5"
+      ]
+    },
+    "consumerGroups": {
+      "type": "string",
+      "defaultValue": "consumerName"      
+    }
+  },
+  "variables": {
+    "eventHubNamespace": "[replace(replace(replace(replace(parameters('eventHubNamespace'), '<environment>', parameters('environment')),'<productName>', parameters('productName')),'<location>', parameters('location')),'<version>', parameters('version'))]",
+    "SharedAccessKeyId": "[resourceId('Microsoft.Eventhub/namespaces/authorizationRules', variables('eventHubNamespace'), 'RootManageSharedAccessKey')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.EventHub/namespaces",
+      "apiVersion": "2017-04-01",
+      "name": "[variables('eventHubNamespace')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard",
+        "capacity": 1
+      },
+      "properties": {
+        "isAutoInflateEnabled": false,
+        "maximumThroughputUnits": 0
+      },
+      "tags": {
+        "Environment": "[parameters('environment')]",
+        "Product": "[parameters('productName')]"
+      }
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/AuthorizationRules",
+      "apiVersion": "2017-04-01",
+      "name": "[concat(variables('eventHubNamespace'), '/RootManageSharedAccessKey')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubNamespace'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "rights": [
+          "Listen",
+          "Manage",
+          "Send"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs",
+      "apiVersion": "2017-04-01",
+      "copy": {
+        "name": "eventHubNamesIndex",
+        "count": "[length(parameters('eventHubNames'))]"
+      },
+      "name": "[concat(variables('eventHubNamespace'), '/', parameters('eventHubNames')[copyIndex('eventHubNamesIndex')])]",
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubNamespace'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "messageRetentionInDays": 1,
+        "partitionCount": 2,
+        "status": "Active"
+      }
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+      "apiVersion": "2017-04-01",
+      "copy": {
+        "name": "eventHubNamesIndex",
+        "count": "[length(parameters('eventHubNames'))]"
+      },
+      "name": "[concat(variables('eventhubNamespace'), '/', parameters('eventHubNames')[copyIndex('eventHubNamesIndex')], '/', parameters('consumerGroups'))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('eventhubNamespace'), parameters('eventHubNames')[copyIndex('eventHubNamesIndex')])]",
+        "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
+      ],
+      "properties": {}
+    }
+  ],
+  "outputs": {
+    "connectionstring.TicketsEventHub:ConnectionString.custom": {
+      "type": "string",
+      "value": "[listkeys(variables('SharedAccessKeyId'), '2017-04-01').primaryConnectionString]"
+    }
+  }
+}
