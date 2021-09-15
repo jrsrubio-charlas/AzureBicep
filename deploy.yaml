@@ -1,4 +1,11 @@
 parameters:
+  - name: deploymentEnvironment
+    type: string
+    values:
+      - prd
+      - tst
+      - stg
+      
   - name: azureSubscription
     type: string
 
@@ -6,12 +13,13 @@ jobs:
   - deployment: Deploy
     pool:
       vmImage: ubuntu-latest
+    environment: ${{parameters.deploymentEnvironment}}
     strategy:
       runOnce:
         deploy:
           steps:
             - checkout: self
-            
+
             - task: AzureCLI@2
               displayName: "Deploy resources using Bicep"
               inputs:
