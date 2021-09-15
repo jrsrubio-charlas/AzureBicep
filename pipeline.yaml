@@ -7,4 +7,4 @@ stages:
     - template: ./deploy.yaml
       parameters:
         deploymentEnvironment: stg
-        azureSubscription: 'VS Enterprise – jramos@plainconcepts.com'        
+        azureSubscription: ''        
