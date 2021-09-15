@@ -1,21 +1,22 @@
 parameters:
-  - name: deploymentEnvironment
-    type: string
-    values:
-      - prd
-      - tst
-      - stg
-
   - name: azureSubscription
     type: string
 
-steps:
-  - checkout: self
-  - task: AzureCLI@2
-    displayName: "Deploy resources using Bicep"
-    inputs:
-      azureSubscription: $()
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        az deployment group create -f '' -g ''
+jobs:
+  - deployment: Deploy
+    pool:
+      vmImage: ubuntu-latest
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+            
+            - task: AzureCLI@2
+              displayName: "Deploy resources using Bicep"
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az deployment group create -f '13-Module.bicep' -g 'BicepWorkshopRG'
