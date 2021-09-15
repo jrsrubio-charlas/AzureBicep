@@ -6,7 +6,7 @@ resource stg 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     name: 'Standard_LRS'
   }
   tags: {
-    name: 'aaa'
-    name2: 'bbb'
+    project: 'Workshop'
+    team: 'Team 10'
   }
 }

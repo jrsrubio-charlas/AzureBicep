@@ -1,4 +1,4 @@
-module cont '04-CrearStorage_Variables_Output.bicep' = {
+module stg '04-CrearStorage_Variables_Output.bicep' = {
   name: 'createStorage'
   params: {
     location: 'westeurope'
@@ -6,4 +6,4 @@ module cont '04-CrearStorage_Variables_Output.bicep' = {
   }
 }
 
-output storageName string = cont.outputs.storageId
+output storageName string = stg.outputs.storageId

@@ -1,9 +1,11 @@
+@description('Location for the resource')
 param location string =  resourceGroup().location
+@description('Environment to deploy')
 param environment string = 'stg'
 
 @minLength(1)
 @maxLength(24)
-param storageAccountName string = '${environment}workshop1bicep1we01'
+param storageAccountName string = '${environment}workshop1bicep1we06'
 
 var storageSKU = 'Standard_LRS'
 

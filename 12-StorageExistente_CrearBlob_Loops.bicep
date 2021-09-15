@@ -1,13 +1,14 @@
+@description('Environment to deploy')
 param environment string = 'stg'
 
 @minLength(1)
 @maxLength(24)
-param storageAccountName string = '${environment}workshop1bicep1we01'
+param storageAccountName string = '${environment}workshop1bicep1we09'
 
 param containerName array = [
-  'containerA'
-  'containerB'
-  'containerC'
+  'container12a'
+  'container12b'
+  'container12c'
 ]
 
 resource stg 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {

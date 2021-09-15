@@ -1,8 +1,9 @@
+@description('Location for the resource')
 param location string =  'westeurope'
 
 @minLength(1)
 @maxLength(24)
-param storageAccountName string = 'workshop1bicep1we01'
+param storageAccountName string = 'workshop1bicep1we04'
 
 var storageSKU = 'Standard_LRS'
 

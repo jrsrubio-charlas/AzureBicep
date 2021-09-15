@@ -1,8 +1,9 @@
+@description('Location for the resource')
 param location string =  resourceGroup().location
 
 @minLength(1)
 @maxLength(24)
-param storageAccountName string = 'workshop1bicep1we01'
+param storageAccountName string = 'workshop1bicep1we05'
 
 var storageSKU = 'Standard_LRS'
 
